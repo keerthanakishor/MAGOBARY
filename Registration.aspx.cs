@@ -15,6 +15,7 @@ namespace MAGOBARY.ADMIN
 
         }
 
+
         protected void RadioButton2_CheckedChanged(object sender, EventArgs e)
         {
 
@@ -34,7 +35,7 @@ namespace MAGOBARY.ADMIN
             objReg.Dob =Convert.ToDateTime( txtdob.Text);
             objReg.Gender = radiomale.Text;
             objReg.Gender = radiofemale.Text;
-            objReg.Course = txtcourse.Text;
+            objReg.Course = course.SelectedItem.Text;
             objReg.Batch = txtbatch.Text;
             objReg.Email = txtemail.Text;
             objReg.Password = txtpass.Text;
@@ -42,6 +43,11 @@ namespace MAGOBARY.ADMIN
 
 
 
+
+        }
+
+        protected void txtdob_TextChanged(object sender, EventArgs e)
+        {
 
         }
     }
