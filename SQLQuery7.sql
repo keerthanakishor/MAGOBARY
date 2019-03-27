@@ -1,0 +1,1 @@
+Alter Table settings Add Foreign Key(rno)References Registration(rno);
