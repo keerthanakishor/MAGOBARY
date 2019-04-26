@@ -40,8 +40,11 @@ namespace MAGOBARY.Class
         private string batch;
         private string email;
         private string password;
-        private int rno;
+        private String rno;
         private string msg;
+        private string fdb;
+
+
 
         public string Fanme
         {
@@ -160,7 +163,7 @@ namespace MAGOBARY.Class
             }
         }
 
-        public int Rno
+        public string Rno
         {
             get
             {
@@ -183,6 +186,19 @@ namespace MAGOBARY.Class
             set
             {
                 msg = value;
+            }
+        }
+
+        public string Fdb
+        {
+            get
+            {
+                return fdb;
+            }
+
+            set
+            {
+                fdb = value;
             }
         }
 
@@ -266,9 +282,9 @@ namespace MAGOBARY.Class
             string qry3 = "delete from registration where rno=@rno ";
             SqlCommand cmd = new SqlCommand(qry3, con);
 
-                cmd.Parameters.AddWithValue("@rno",rno);
-            
-            
+            cmd.Parameters.AddWithValue("@rno", rno);
+
+
             cmd.ExecuteNonQuery();
 
             DataTable dtReg = new DataTable();
@@ -282,6 +298,7 @@ namespace MAGOBARY.Class
         {
             OpenConection();
             string condition = string.Empty;
+            condition += (!string.IsNullOrEmpty(rno) ? " and rno=@rno" : string.Empty);
             condition += (!string.IsNullOrEmpty(fanme) ? " and fname like @fname" : string.Empty);
             condition += (!string.IsNullOrEmpty(mname) ? " and mname like @mname " : string.Empty);
             condition += (!string.IsNullOrEmpty(lname) ? " and lname like @lname" : string.Empty);
@@ -291,10 +308,11 @@ namespace MAGOBARY.Class
 
             string qry2 = "Select * from Registration where 1=1 " + condition;
             SqlCommand cmd = new SqlCommand(qry2, con);
+            cmd.Parameters.AddWithValue("@rno", '%' + rno + '%');
             cmd.Parameters.AddWithValue("@fname", '%' + fanme + '%');
             cmd.Parameters.AddWithValue("@mname", '%' + mname + '%');
-            cmd.Parameters.AddWithValue("@lname", '%' + lname+ '%');
-            cmd.Parameters.AddWithValue("@course", '%' + course+ '%');
+            cmd.Parameters.AddWithValue("@lname", '%' + lname + '%');
+            cmd.Parameters.AddWithValue("@course", '%' + course + '%');
             cmd.Parameters.AddWithValue("@email", email);
 
 
@@ -326,27 +344,182 @@ namespace MAGOBARY.Class
 
             string qry = "insert into message values (" + msg_id + ",@rno,GETDATE(),@message);";
             SqlCommand cmd = new SqlCommand(qry, con);
-            cmd.Parameters.AddWithValue("@rno",rno);
-            cmd.Parameters.AddWithValue("@message",msg);
-          
+            cmd.Parameters.AddWithValue("@rno", rno);
+            cmd.Parameters.AddWithValue("@message", msg);
+
 
 
             cmd.ExecuteNonQuery();
         }
 
-        public DataTable MessageData()
+        public DataTable MessageviewData()
         {
             OpenConection();
-            string qry4 = "select * from message ";
-            SqlCommand cmd = new SqlCommand(qry4, con);
-           
+            DataTable dtReg = new DataTable();
+            SqlCommand command = new SqlCommand("Select * from message", con);
+
+            SqlDataAdapter da = new SqlDataAdapter(command);// this will query your database and return the result to your datatable
+            da.Fill(dtReg);
+            CloseConnection();
+            return dtReg;
+        }
+        public DataTable searchfriends()
+        {
+            OpenConection();
+            string condition = string.Empty;
+            condition += (!string.IsNullOrEmpty(fanme) ? " and fname like @fname" : string.Empty);
+            condition += (!string.IsNullOrEmpty(mname) ? " and mname like @mname " : string.Empty);
+            condition += (!string.IsNullOrEmpty(lname) ? " and lname like @lname" : string.Empty);
+            condition += (!string.IsNullOrEmpty(course) ? " and course like @course" : string.Empty);
+            condition += (!string.IsNullOrEmpty(email) ? " and email=@email " : string.Empty);
+
+
+            string qry2 = "Select * from Registration where 1=1 " + condition;
+            SqlCommand cmd = new SqlCommand(qry2, con);
+            cmd.Parameters.AddWithValue("@fname", '%' + fanme + '%');
+            cmd.Parameters.AddWithValue("@mname", '%' + mname + '%');
+            cmd.Parameters.AddWithValue("@lname", '%' + lname + '%');
+            cmd.Parameters.AddWithValue("@course", '%' + course + '%');
+            cmd.Parameters.AddWithValue("@email", email);
+
+
             cmd.ExecuteNonQuery();
 
-            DataTable dtmessage = new DataTable();
+            DataTable dtReg = new DataTable();
             SqlDataAdapter da = new SqlDataAdapter(cmd);
-            da.Fill(dtmessage);
+            da.Fill(dtReg);
             CloseConnection();
-            return dtmessage;
+            return dtReg;
+
+        }
+        public DataTable FriendsData()
+        {
+            OpenConection();
+            string qry2 = "select * from Registration ";
+            SqlCommand cmd = new SqlCommand(qry2, con);
+            /*    cmd.Parameters.AddWithValue("@fname",'%' + fanme+'%');
+                cmd.Parameters.AddWithValue("@mname", '%' + mname + '%');
+                cmd.Parameters.AddWithValue("@lname", '%' + lname + '%');
+                cmd.Parameters.AddWithValue("@dbo", '%' + dob + '%');
+
+
+        */
+            cmd.ExecuteNonQuery();
+
+            DataTable dtReg = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dtReg);
+            CloseConnection();
+            return dtReg;
+
+
+        }
+        public DataTable Display()
+        {
+            DataTable dtReg = new DataTable();
+            OpenConection();
+            SqlCommand command = new SqlCommand(" select * from Registration", con);
+            command.ExecuteNonQuery();
+            CloseConnection();
+            SqlDataAdapter da = new SqlDataAdapter(command);
+            da.Fill(dtReg);
+            CloseConnection();
+            return dtReg;
+        }
+        public DataTable SendRequest()
+        {
+            OpenConection();
+            string condition = string.Empty;
+            condition += (!string.IsNullOrEmpty(rno) ? " and rno=@rno" : string.Empty);
+            condition += (!string.IsNullOrEmpty(fanme) ? " and fname like @fname" : string.Empty);
+            condition += (!string.IsNullOrEmpty(mname) ? " and mname like @mname " : string.Empty);
+            condition += (!string.IsNullOrEmpty(lname) ? " and lname like @lname" : string.Empty);
+            condition += (!string.IsNullOrEmpty(course) ? " and course like @course" : string.Empty);
+            condition += (!string.IsNullOrEmpty(email) ? " and email=@email " : string.Empty);
+
+
+            string qry2 = "Select * from Registration where 1=1 " + condition;
+            SqlCommand cmd = new SqlCommand(qry2, con);
+            cmd.Parameters.AddWithValue("@rno", '%' + rno + '%');
+            cmd.Parameters.AddWithValue("@fname", '%' + fanme + '%');
+            cmd.Parameters.AddWithValue("@mname", '%' + mname + '%');
+            cmd.Parameters.AddWithValue("@lname", '%' + lname + '%');
+            cmd.Parameters.AddWithValue("@course", '%' + course + '%');
+            cmd.Parameters.AddWithValue("@email", email);
+
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dtReg = new DataTable();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(dtReg);
+            CloseConnection();
+            return dtReg;
+
+        }
+        public void Request()
+        {
+            OpenConection();
+            SqlCommand command = new SqlCommand("Select max(rid) from sendRequest ", con);
+            int rid;
+            object cMax = command.ExecuteScalar();
+            if (cMax != DBNull.Value)
+            {
+                rid = (int)cMax;
+                rid++;
+            }
+            else
+            {
+                rid = 1;
+            }
+
+
+            string qry = "insert into sendRequest values (" + rid + ",@rno,GETDATE());";
+            SqlCommand cmd = new SqlCommand(qry, con);
+            cmd.Parameters.AddWithValue("@rno", rno);
+           
+
+
+
+            cmd.ExecuteNonQuery();
+
+        }
+        public void InsertFeedback()
+        {
+            OpenConection();
+            SqlCommand command = new SqlCommand("Select max(f_id) from feedback ", con);
+            int f_id;
+            object cMax = command.ExecuteScalar();
+            if (cMax != DBNull.Value)
+            {
+                f_id = (int)cMax;
+                f_id++;
+            }
+            else
+            {
+                f_id = 1;
+            }
+
+
+            string qry = "insert into feedback values (" + f_id + ",@rno,GETDATE(),@feedback);";
+            SqlCommand cmd = new SqlCommand(qry, con);
+            cmd.Parameters.AddWithValue("@rno", rno);
+            cmd.Parameters.AddWithValue("@feedback", fdb);
+
+
+
+            cmd.ExecuteNonQuery();
+        }
+        public DataTable Feedbackview()
+        {
+            OpenConection();
+            DataTable dtReg = new DataTable();
+            SqlCommand command = new SqlCommand("Select * from feedback", con);
+
+            SqlDataAdapter da = new SqlDataAdapter(command);// this will query your database and return the result to your datatable
+            da.Fill(dtReg);
+            CloseConnection();
+            return dtReg;
         }
     }
 }
